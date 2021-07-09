@@ -1,4 +1,8 @@
-import websocket, json, pprint, talib, numpy
+import websocket
+import json
+import pprint
+import talib
+import numpy as np
 
 socket = "wss://ws-feed-public.sandbox.pro.coinbase.com"
 
@@ -37,7 +41,7 @@ def on_m(web_socket,message):
         print(closing_prices)
         
         if len(closing_prices) > RSI_period:
-            np_arr = numpy.array(closing_prices)
+            np_arr = np.array(closing_prices)
             rsi = talib.RSI(np_arr,RSI_period)
             macd,macdsignal,macdhist = talib.MACD(np_arr,MACD_fastperiod,MACD_slowperiod,MACD_signalperiod)
             print("rsi calculated-")
@@ -63,4 +67,3 @@ def on_m(web_socket,message):
 
 ws = websocket.WebSocketApp(socket,on_open=on_o, on_close= on_c, on_message= on_m)
 ws.run_forever()
-
