@@ -1,6 +1,6 @@
-import websocket, json, pprint, talib, numpy,
+import websocket, json, pprint, talib, numpy
 
-socket = "wss://stream.binance.com:9443/ws/ethusdt@kline_1m"
+socket = "wss://ws-feed-public.sandbox.pro.coinbase.com"
 
 RSI_period = 11
 RSI_overbought = 84
@@ -9,7 +9,7 @@ MACD_fastperiod= 12
 MACD_slowperiod = 26
 MACD_signalperiod = 9
 trade_symbol = "ETHUSD"
-quantity = .01
+quantity = .01 
 
 closing_prices= []
 in_postion = False
@@ -58,6 +58,7 @@ def on_m(web_socket,message):
                     print("oversold but already bought")
                 else:
                     print("BUY! SHEESH BIG MONEY PLAYS")
+                    
 
 
 ws = websocket.WebSocketApp(socket,on_open=on_o, on_close= on_c, on_message= on_m)
