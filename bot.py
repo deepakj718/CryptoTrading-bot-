@@ -16,10 +16,11 @@ class CryptoBot:
         """
         self.websocket_client = websocket_client
 
-    def show_live_data(self):
+    def start_websocket_client(self):
         """
         Use the websocket_client to log realtime data
         """
+        self.websocket_client.start()
 
     def close_websocket_client(self):
         """
@@ -30,7 +31,7 @@ class CryptoBot:
 
 if __name__ == "__main__":
     cb = CryptoBot(WEBSOCKET_CLIENT)
-    cb.show_live_data()
+    cb.start_websocket_client()
     #cb.close_websocket_client()
 
 """
