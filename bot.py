@@ -2,37 +2,36 @@ import json
 import pprint
 import numpy as np
 import logging
+import cbpro
 
 from constants import (
     AUTH_CLIENT, WEBSOCKET_CLIENT, RSI_PERIOD, RSI_OVERBOUGHT, RSI_OVERSOLD, MACD_FASTPERIOD, MACD_SLOWPERIOD,
-    MACD_SIGNALPERIOD, BUY_AMOUNT_IN_DOLLARS
+    MACD_SIGNALPERIOD, BUY_AMOUNT_IN_DOLLARS, API_SECRET, API_KEY, API_PASS, API_URL, WEBSOCKET_URL, COIN_SYMBOL,
+    CURRENCY
 )
 
-class CryptoBot:
 
-    def __init__(self, websocket_client):
-        """
-        :param websocket_client: websocket client for exchange
-        """
-        self.websocket_client = websocket_client
+class WebsocketClientInteractor(cbpro.WebsocketClient):
 
-    def start_websocket_client(self):
-        """
-        Use the websocket_client to log realtime data
-        """
-        self.websocket_client.start()
+    def on_open(self):
+        self.url = WEBSOCKET_URL
+        self.api_key=API_KEY
+        self.api_secret=API_SECRET
+        self.api_passphrase=API_PASS
+        self.channels = ["ticker"]
+        self.products = [f"{COIN_SYMBOL}-{CURRENCY}"]
+        self.message_count = 0
 
-    def close_websocket_client(self):
-        """
-        Close the socket
-        """
-        self.websocket_client.close()
+    def on_message(self, msg):
+            print(json.dumps(msg, indent=4, sort_keys=True))
+            self.message_count += 1
 
+    def on_close(self):
+        print("-- Goodbye! --")
 
 if __name__ == "__main__":
-    cb = CryptoBot(WEBSOCKET_CLIENT)
-    cb.start_websocket_client()
-    #cb.close_websocket_client()
+    wsClient = WebsocketClientInteractor()
+    wsClient.start()
 
 """
 closing_prices= []

@@ -20,13 +20,6 @@ AUTH_CLIENT = cbpro.AuthenticatedClient(
     api_url=API_URL
 )
 
-CURRENCY = "USD"
-WEBSOCKET_CLIENT  = cbpro.WebsocketClient(
-    url=WEBSOCKET_URL,
-    products=f"{COIN_SYMBOL}-{CURRENCY}",
-    channels=["ticker"]
-)
-
 # algo parameters
 RSI_PERIOD = 11
 RSI_OVERBOUGHT = 84
@@ -37,3 +30,4 @@ MACD_SIGNALPERIOD = 9
 
 # coinbase
 BUY_AMOUNT_IN_DOLLARS = 20
+CURRENCY = "USD"
