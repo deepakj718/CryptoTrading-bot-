@@ -1,0 +1,6 @@
+.venv/
+.vscode/
+coinbase_credentials.py
+
+# dotenv
+.env
