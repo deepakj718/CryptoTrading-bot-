@@ -3,6 +3,8 @@ import pprint
 import numpy as np
 import logging
 import cbpro
+import pandas as pd
+import ta
 
 from constants import (
     AUTH_CLIENT, RSI_PERIOD, RSI_OVERBOUGHT, RSI_OVERSOLD, MACD_FASTPERIOD, MACD_SLOWPERIOD,
@@ -10,7 +12,33 @@ from constants import (
     CURRENCY
 )
 
-
+class CoinbaseProInteractor():
+    """
+    Utility class to interact with pro.coinbase.com
+    """
+    def __init__(self, auth_client) -> None:
+        self.auth_client=auth_client
+        
+    def buy_coin(self, price, size, order_type, product_id):
+        """
+        Place a buy order on coinbase
+        """
+        self.auth_client.buy(
+            price=price,
+            size=size,
+            order_type=order_type,
+            product_id=product_id
+        )
+    def sell_coin(self, price, size, order_type, product_id):
+        """
+        Place a sell order on coinbase
+        """
+        self.auth_client.sell(
+            price=price,
+            size=size,
+            order_type=order_type,
+            product_id=product_id
+        )
 class WebsocketClientInteractor(cbpro.WebsocketClient):
 
     def on_open(self):
@@ -21,9 +49,39 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
         self.channels = ["ticker"]
         self.products = [f"{COIN_SYMBOL}-{CURRENCY}"]
         self.message_count = 0
+        self.price_arr = []
 
     def on_message(self, msg):
-            print(json.dumps(msg, indent=4, sort_keys=True))
+
+        print(json.dumps(msg, indent=4, sort_keys=True))
+        if 'price' in msg and 'type' in msg:
+            self.price_arr.append(float(msg["price"]))
+
+            if len(self.price_arr) > RSI_PERIOD:
+                rsi = ta.momentum.rsi(
+                    close =pd.Series(self.price_arr),
+                    window= RSI_PERIOD,
+                    fillna = True
+                )
+                """ macd = ta.trend.macd(
+                    close = pd.Series(self.price_arr),
+                    window_fast = MACD_FASTPERIOD,
+                    window_slow = MACD_SLOWPERIOD,
+                ) """
+                macd_signal = ta.trend.macd_diff(
+                    close = pd.Series(self.price_arr),
+                    window_fast = MACD_FASTPERIOD,
+                    window_slow = MACD_SLOWPERIOD,
+                    window_sign = MACD_SIGNALPERIOD,
+                    fillna = True
+                )
+                self.price_arr.clear()
+                print(macd_signal)
+                print(rsi)
+
+
+            
+            print(self.price_arr)
             self.message_count += 1
 
     def on_close(self):
