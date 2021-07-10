@@ -16,7 +16,7 @@ trade_symbol = "ETHUSD"
 quantity = .01 
 
 closing_prices= []
-in_postion = False
+
 
 def on_o(web_socket):
     print("opened connection")
@@ -26,6 +26,7 @@ def on_c(web_socket):
 
 def on_m(web_socket,message):  #change all json messages from binance api to coinbase api
     global closing_prices
+    in_postion = False
     print("recieved message")
     json_message = json.loads(message)
     pprint.pprint(json_message)
