@@ -1,3 +1,6 @@
 .venv/
 .vscode/
 coinbase_credentials.py
+__pycache__/
+# dotenv
+.env
