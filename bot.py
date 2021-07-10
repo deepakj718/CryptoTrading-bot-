@@ -1,28 +1,42 @@
-import websocket
 import json
 import pprint
-import talib
 import numpy as np
+import logging
 
-socket = "wss://ws-feed-public.sandbox.pro.coinbase.com"
+from constants import (
+    AUTH_CLIENT, WEBSOCKET_CLIENT, RSI_PERIOD, RSI_OVERBOUGHT, RSI_OVERSOLD, MACD_FASTPERIOD, MACD_SLOWPERIOD,
+    MACD_SIGNALPERIOD, BUY_AMOUNT_IN_DOLLARS
+)
 
-RSI_period = 11
-RSI_overbought = 84
-RSI_oversold = 30
-MACD_fastperiod= 12
-MACD_slowperiod = 26
-MACD_signalperiod = 9
-trade_symbol = "ETHUSD"
-quantity = .01 
+class CryptoBot:
 
+    def __init__(self, websocket_client):
+        """
+        :param websocket_client: websocket client for exchange
+        """
+        self.websocket_client = websocket_client
+
+    def show_live_data(self):
+        """
+        Use the websocket_client to log realtime data
+        """
+
+    def close_websocket_client(self):
+        """
+        Close the socket
+        """
+        self.websocket_client.close()
+
+
+if __name__ == "__main__":
+    cb = CryptoBot(WEBSOCKET_CLIENT)
+    cb.show_live_data()
+    #cb.close_websocket_client()
+
+"""
 closing_prices= []
 in_postion = False
 
-def on_o(web_socket):
-    print("opened connection")
-
-def on_c(web_socket):
-    print("closed connection")
 
 def on_m(web_socket,message):
     global closing_prices
@@ -62,8 +76,4 @@ def on_m(web_socket,message):
                     print("oversold but already bought")
                 else:
                     print("BUY! SHEESH BIG MONEY PLAYS")
-                    
-
-
-ws = websocket.WebSocketApp(socket,on_open=on_o, on_close= on_c, on_message= on_m)
-ws.run_forever()
+"""
