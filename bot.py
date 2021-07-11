@@ -91,6 +91,11 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                 if rsi > RSI_OVERBOUGHT and macd - macd_signal < 0 and macd_arr.tolist()[-2] - macd_signal_arr.tolist()[-2] > 0:
                     if self.in_position:
                         #insert sell trigger
+                        AUTH_CLIENT.place_market_order(
+                            product_id = f"{COIN_SYMBOL}-{CURRENCY}",
+                            side = 'sell',
+                            
+                        )
                         print("SELL! COLLECTING THE BAG")
                         in_postion = False
                     else:
@@ -100,6 +105,12 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                     if self.in_postion:
                         print("oversold but already bought")
                     else:
+                        size = BUY_AMOUNT_IN_DOLLARS / float(msg['price'])
+                        AUTH_CLIENT.place_market_order(
+                            product_id = f"{COIN_SYMBOL}-{CURRENCY}",
+                            side = 'buy',
+                            funds= BUY_AMOUNT_IN_DOLLARS
+                        )
                         #input buy triggers 
                         print("BUY! SHEESH BIG MONEY PLAYS")
                         in_postion = True 
