@@ -1,3 +1,4 @@
+from datetime import time
 import json
 import pprint
 import numpy as np
@@ -5,6 +6,7 @@ import logging
 import cbpro
 import pandas as pd
 import ta
+import time
 
 from constants import (
     AUTH_CLIENT, RSI_PERIOD, RSI_OVERBOUGHT, RSI_OVERSOLD, MACD_FASTPERIOD, MACD_SLOWPERIOD,
@@ -52,6 +54,7 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
         self.message_count = 0
         self.price_arr = []
         self.in_position = False
+        self.time = time.time()
 
     def on_message(self, msg):
 
@@ -83,7 +86,7 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                 macd = macd_arr.tolist()[-1]
                 macd_signal = macd_signal_arr.tolist()[-1]
                 print('the current rsi is {}'.format(rsi))
-                print('the current MACD line is{}'.format(macd))
+                print('the current MACD line is {}'.format(macd))
                 print('the current MACD signal line is {}'.format(macd_signal))
                  
                 
@@ -94,7 +97,7 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                         AUTH_CLIENT.place_market_order(
                             product_id = f"{COIN_SYMBOL}-{CURRENCY}",
                             side = 'sell',
-                            
+                            funds= BUY_AMOUNT_IN_DOLLARS
                         )
                         print("SELL! COLLECTING THE BAG")
                         in_postion = False
@@ -120,8 +123,11 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
 
 
             
+            time_passed = round((self.time - time.time()) / 60 , 2)
+            print('bot has been running for ' + str(time_passed) + ' minutes')
             print(self.price_arr)
-            self.message_count += 1
+            time.sleep(60)          
+            
 
     def on_close(self):
         print("-- Goodbye! --")

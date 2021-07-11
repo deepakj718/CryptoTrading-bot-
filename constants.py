@@ -21,7 +21,7 @@ AUTH_CLIENT = cbpro.AuthenticatedClient(
 )
 
 # algo parameters
-RSI_PERIOD = 3
+RSI_PERIOD = 11
 RSI_OVERBOUGHT = 84
 RSI_OVERSOLD = 30
 MACD_FASTPERIOD= 12
