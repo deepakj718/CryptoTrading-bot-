@@ -7,6 +7,7 @@ import cbpro
 import pandas as pd
 import ta
 import time
+import talib
 
 from constants import (
     AUTH_CLIENT, RSI_PERIOD, RSI_OVERBOUGHT, RSI_OVERSOLD, MACD_FASTPERIOD, MACD_SLOWPERIOD,
@@ -62,12 +63,14 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
         if 'price' in msg and 'type' in msg:
             self.price_arr.append(float(msg["price"]))
 
+
             if len(self.price_arr) > RSI_PERIOD:
                 rsi_arr = ta.momentum.rsi(
                     close =pd.Series(self.price_arr),
                     window= RSI_PERIOD,
                     fillna = True
-                )
+                ) 
+                
                 macd_arr = ta.trend.macd(
                     close = pd.Series(self.price_arr),
                     window_fast = MACD_FASTPERIOD,
@@ -80,18 +83,18 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                     window_slow = MACD_SLOWPERIOD,
                     window_sign = MACD_SIGNALPERIOD,
                     fillna = True
-                )
+                ) 
+
                 
                 rsi = rsi_arr.tolist()[-1]
-                macd = macd_arr.tolist()[-1]
-                macd_signal = macd_signal_arr.tolist()[-1]
-                print('the current rsi is {}'.format(rsi))
-                print('the current MACD line is {}'.format(macd))
-                print('the current MACD signal line is {}'.format(macd_signal))
+                macd = macd_arr.tolist()[-1] - macd_signal_arr.tolist()[-1]
+                
+                print('the current RSI is {}'.format(rsi))
+                print('the current MACD is {}'.format(macd))
                  
                 
 
-                if rsi > RSI_OVERBOUGHT and macd - macd_signal < 0 and macd_arr.tolist()[-2] - macd_signal_arr.tolist()[-2] > 0:
+                if rsi > RSI_OVERBOUGHT and macd < 0:
                     if self.in_position:
                         #insert sell trigger
                         AUTH_CLIENT.place_market_order(
@@ -104,7 +107,7 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                     else:
                         print("overbought but we don't have any")
                 
-                if rsi < RSI_OVERSOLD and macd - macd_signal > 0 and macd_arr.tolist()[-2] - macd_signal_arr.tolist()[-2] < 0:
+                if rsi < RSI_OVERSOLD and macd > 0:
                     if self.in_postion:
                         print("oversold but already bought")
                     else:
@@ -126,9 +129,10 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
             time_passed = round((self.time - time.time()) / 60 , 2)
             print('bot has been running for ' + str(time_passed) + ' minutes')
             print(self.price_arr)
-            time.sleep(60)          
-            
-
+            if len(self.price_arr) != RSI_PERIOD:
+                time.sleep(60)
+       
+                    
     def on_close(self):
         print("-- Goodbye! --")
 
