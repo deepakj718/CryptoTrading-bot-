@@ -14,34 +14,6 @@ from constants import (
     MACD_SIGNALPERIOD, BUY_AMOUNT_IN_DOLLARS, API_SECRET, API_KEY, API_PASS, API_URL, WEBSOCKET_URL, COIN_SYMBOL,
     CURRENCY
 )
-
-class CoinbaseProInteractor():
-    """
-    Utility class to interact with pro.coinbase.com
-    """
-    def __init__(self, auth_client) -> None:
-        self.auth_client=auth_client
-
-    def buy_coin(self, price, size, order_type, product_id):
-        """
-        Place a buy order on coinbase
-        """
-        self.auth_client.buy(
-            price=price,
-            size=size,
-            order_type=order_type,
-            product_id=product_id
-        )
-    def sell_coin(self, price, size, order_type, product_id):
-        """
-        Place a sell order on coinbase
-        """
-        self.auth_client.sell(
-            price=price,
-            size=size,
-            order_type=order_type,
-            product_id=product_id
-        )
 class WebsocketClientInteractor(cbpro.WebsocketClient):
     
 
@@ -58,19 +30,23 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
         self.time = time.time()
 
     def on_message(self, msg):
-
+       
         print(json.dumps(msg, indent=4, sort_keys=True))
         if 'price' in msg and 'type' in msg:
             self.price_arr.append(float(msg["price"]))
 
-
             if len(self.price_arr) > RSI_PERIOD:
-                rsi_arr = ta.momentum.rsi(
-                    close =pd.Series(self.price_arr),
+                print(self.price_arr)
+                """ rsi_arr = ta.momentum.rsi(
+                    close =pd.Series(self.price_arr),                        
                     window= RSI_PERIOD,
                     fillna = True
-                ) 
-                
+                )  """
+                rsi_arr = talib.RSI(
+                    np.array(self.price_arr),
+                    timeperiod =RSI_PERIOD
+                )
+                    
                 macd_arr = ta.trend.macd(
                     close = pd.Series(self.price_arr),
                     window_fast = MACD_FASTPERIOD,
@@ -85,14 +61,14 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                     fillna = True
                 ) 
 
-                
+                print(rsi_arr)
                 rsi = rsi_arr.tolist()[-1]
                 macd = macd_arr.tolist()[-1] - macd_signal_arr.tolist()[-1]
-                
+                    
                 print('the current RSI is {}'.format(rsi))
                 print('the current MACD is {}'.format(macd))
-                 
-                
+                    
+                    
 
                 if rsi > RSI_OVERBOUGHT and macd < 0:
                     if self.in_position:
@@ -106,7 +82,7 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                         in_postion = False
                     else:
                         print("overbought but we don't have any")
-                
+                    
                 if rsi < RSI_OVERSOLD and macd > 0:
                     if self.in_postion:
                         print("oversold but already bought")
@@ -122,15 +98,14 @@ class WebsocketClientInteractor(cbpro.WebsocketClient):
                         in_postion = True 
 
                 self.price_arr.clear()
+                    
+
+
                 
-
-
-            
-            time_passed = round((self.time - time.time()) / 60 , 2)
-            print('bot has been running for ' + str(time_passed) + ' minutes')
-            print(self.price_arr)
-            if len(self.price_arr) != RSI_PERIOD:
-                time.sleep(60)
+        time_passed = round((time.time() - self.time ) / 60 , 2)
+        print('bot has been running for ' + str(time_passed) + ' minutes')
+        print(self.price_arr)
+        time.sleep(60)
        
                     
     def on_close(self):
