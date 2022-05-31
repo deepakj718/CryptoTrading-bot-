@@ -1,5 +1,4 @@
 import os
-import cbpro
 
 from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
@@ -13,12 +12,12 @@ WEBSOCKET_URL = os.environ.get("WEBSOCKET_URL")
 COIN_SYMBOL = os.environ.get("COIN_SYMBOL")
 
 # coinbase client
-AUTH_CLIENT = cbpro.AuthenticatedClient(
+"""AUTH_CLIENT = cbpro.AuthenticatedClient(
     key=API_KEY,
     b64secret=API_SECRET,
     passphrase=API_PASS,
     api_url=API_URL
-)
+)"""
 
 # algo parameters
 RSI_PERIOD = 6

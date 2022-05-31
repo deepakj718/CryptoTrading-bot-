@@ -1,6 +1,8 @@
 .venv/
+venv/
 .vscode/
 coinbase_credentials.py
 __pycache__/
 # dotenv
+tradingbot/.env
 .env
