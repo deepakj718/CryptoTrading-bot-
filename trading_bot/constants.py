@@ -9,7 +9,7 @@ API_KEY = os.environ.get("API_KEY")
 API_PASS = os.environ.get("API_PASS")
 API_URL = os.environ.get("API_URL")
 WEBSOCKET_URL = os.environ.get("WEBSOCKET_URL")
-COIN_SYMBOL = os.environ.get("COIN_SYMBOL")
+COIN_SYMBOL = ""
 
 # coinbase client
 """AUTH_CLIENT = cbpro.AuthenticatedClient(

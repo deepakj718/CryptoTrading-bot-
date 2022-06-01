@@ -1,9 +1,17 @@
-from flask import Blueprint, render_template, request
-from flask_login import login_required, current_user
-from requests import request
-from . import db
+
+try:
+    from flask import Blueprint, render_template, redirect, url_for
+    from flask import request
+    from flask_login import login_required, current_user
+    from . import db
+    from .models import User, Price
+    from ..trading_bot.constants import WEBSOCKET_URL, COIN_SYMBOL
+except Exception as e:
+    print(" Some pacakages are missing: {}".format(e))
 
 main = Blueprint('main', __name__)
+ticker = ""
+web_url = ""
 
 @main.route('/')
 def index():
@@ -17,9 +25,15 @@ def profile():
 @main.route('/profile', methods=['POST'])
 def run_trader():
     # get ticker symbol
+    global ticker
     ticker = request.form.get('tag')
+    web_url = "wss://stream.binance.com:9443/ws/{}usdt@kline_1m".format(ticker)
+    return redirect(url_for('main.trader'))
 
-    user = User.query.filter_by(email=email).first()
 
+@main.route('/trading')
+@login_required
+def trader():
+    return render_template('trading.html', tick=ticker)
    
     

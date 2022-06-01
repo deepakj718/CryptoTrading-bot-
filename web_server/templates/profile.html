@@ -4,9 +4,11 @@
 <h1 class="title">
   Welcome, {{ name }}!
 </h1>
-<form method="POST" action="/profile">
-    <label for="tag">Ticker Symbol:</label>
-    <input type="tag" id="tag" name="tag" placeholder="BTC" autofocus="">
-    <input type="submit" value="Run">
-</form>
+<div>
+    <form method="POST" action="/profile">
+        <label for="tag">Ticker Symbol:</label>
+        <input type="tag" id="tag" name="tag" placeholder="btc" autofocus="">
+        <input type="submit" value="Run">
+    </form>
+</div>
 {% endblock %}
