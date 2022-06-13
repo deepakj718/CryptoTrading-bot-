@@ -20,15 +20,15 @@ def on_message(ws,message):
     is_closed = candle['x'] #is the candle price closed
     print(candle)
 
-if is_closed:
-    print(candle['c']) # closing price
+    if is_closed:
+        print(candle['c']) # closing price
 
-    ws = websocket.WebSocketApp(WEBSOCKET_URL, on_open = on_open, on_close = on_close, on_message = on_message )
+ws = websocket.WebSocketApp(WEBSOCKET_URL, on_open = on_open, on_close = on_close, on_message = on_message )
+ws.run_forever()
 
     
-if __name__ == '__main__':
-    trader = TradingClient()
-    trader.ws.run_forever()
+
+    
 
 
     

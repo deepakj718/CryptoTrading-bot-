@@ -1,17 +1,20 @@
-from flask_socketio import SocketIO
-from flask import Flask
+import imp
+from socket import socket
+from flask_socketio import SocketIO, emit
+from flask import Flask,render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from .main import ticker, web_url
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+    socketio = SocketIO(app)
 
     app.config['SECRET_KEY'] = 'secret-key-goes-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-    socketio = SocketIO(app)
 
     db.init_app(app)
 
@@ -25,6 +28,14 @@ def create_app():
     def load_user(user_id):
         # since the user_id is just the primary key of our user table, use it in the query for the user
         return User.query.get(int(user_id))
+
+    @socketio.on('connect')                                                         
+    def connect():                                                                  
+        emit('message', {'hello': "Hello"})                                         
+                                       
+
+
+
 
     # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint

@@ -4,12 +4,16 @@
 <h1 class="title">
   Trading {{ tick }}!
   <h2 class=" title">
-    <script type="text/javascript" charset="utf-8">
-        var socket = 'wss://stream.binance.com:9443/ws/' + "{{tick}}" +'usdt@kline_1m'
-        
-        document.write("the socket is  " + socket )
-    </script>
+    <script>
+        var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+        binanceSocket.onmessage = function (event) {
+            console.log(event.data);
+            var messageObject = JSON.parse(event.data);
+            console.log('message is: ' + messageObject)
 
+        }
+            
+    </script>
   </h2>
   
   
